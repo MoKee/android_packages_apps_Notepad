@@ -111,9 +111,7 @@ public class NoteEditor extends Activity {
 
             for (int i = 0; i < count; i++) {
                 int baseline = getLineBounds(i, r);
-                // canvas.drawLine(r.left, baseline + 2, r.right, baseline + 2,
-                // paint);
-                canvas.drawLine(r.left, baseline + 17, r.right, baseline + 17, paint);
+                canvas.drawLine(r.left, baseline + 18, r.right, baseline + 18, paint);
             }
             super.onDraw(canvas);
         }

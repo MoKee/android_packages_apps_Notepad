@@ -98,9 +98,7 @@ public class TitleEditor extends Activity implements View.OnClickListener {
         if (mCursor != null) {
             mCursor.moveToFirst();
             mText.setText(mCursor.getString(COLUMN_INDEX_TITLE));
-            // add by gaoerjing 2012.04.05 for QELYSW-1200(begin)
             mText.setSelection(mText.getText().length());
-            // add by gaoerjing 2012.04.05 for QELYSW-1200(end)
         }
     }
 

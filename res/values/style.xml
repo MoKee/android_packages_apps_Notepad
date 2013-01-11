@@ -1,13 +1,15 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="title" mce_bogus="1" parent="android:Theme.Light">
+    <style name="title" mce_bogus="1" parent="android:Theme">
         <item name="android:windowTitleSize">50dp</item>
         <item name="android:windowTitleBackgroundStyle">@drawable/notelites_title</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
-    <style name="editor_title" mce_bogus="1" parent="android:Theme.Light">
+    <style name="editor_title" mce_bogus="1" parent="android:Theme">
         <item name="android:windowTitleSize">50dp</item>
         <item name="android:windowTitleBackgroundStyle">@drawable/notelites_title</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
 </resources>

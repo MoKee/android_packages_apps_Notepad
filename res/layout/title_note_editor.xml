@@ -34,7 +34,7 @@
         android:paddingRight="5dip"
         android:background="@drawable/enter"
         android:hint="@string/please_edit_title"
-        android:textColorHint="@android:color/black"
+        android:textColorHint="@android:color/white"
         android:textColor="@android:color/white"
         android:imeOptions="actionNext"
         android:singleLine="true"
