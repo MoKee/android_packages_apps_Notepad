@@ -22,7 +22,6 @@
     <string name="title_edit_title">标题:</string>
     <string name="title_create">创建便签</string>
     <string name="title_edit">编辑: \"%1$s\"</string>
-    <string name="title_notes_list">便签</string>
     <string name="menu_add">添加便签</string>
     <string name="menu_save">保存</string>
     <string name="menu_delete">删除</string>

@@ -22,7 +22,6 @@
     <string name="title_edit_title">標題:</string>
     <string name="title_create">創建便簽</string>
     <string name="title_edit">編輯: \"%1$s\"</string>
-    <string name="title_notes_list">便簽</string>
     <string name="menu_add">添加便簽</string>
     <string name="menu_save">保存</string>
     <string name="menu_delete">刪除</string>

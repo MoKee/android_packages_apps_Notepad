@@ -34,9 +34,7 @@
         <activity
             android:name="NotesList"
             android:configChanges="orientation"
-            android:label="@string/title_notes_list"
-            android:launchMode="singleTask"
-            android:theme="@style/title" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -99,8 +97,8 @@
             android:name="TitleEditor"
             android:icon="@drawable/ic_menu_edit"
             android:label="@string/title_edit_title"
-            android:theme="@android:style/Theme.Holo.Dialog"
-            android:windowSoftInputMode="stateVisible" >
+            android:windowSoftInputMode="stateVisible"
+            android:theme="@android:style/Theme.Holo.Light.Dialog" >
 
             <!--
                  This activity implements an alternative action that can be

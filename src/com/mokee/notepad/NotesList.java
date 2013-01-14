@@ -26,7 +26,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -38,10 +37,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -73,12 +69,9 @@ public class NotesList extends ListActivity {
     private static final int SURE_TO_DELETE = 0;
     private Uri noteUri = null;
 
-    private ImageButton mImageButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 
         // If no data was given in the intent (because we were started
@@ -108,22 +101,25 @@ public class NotesList extends ListActivity {
                         R.id.title, R.id.datetime
                 });
         setListAdapter(adapter);
-        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_noteslist);
-        mImageButton = (ImageButton) findViewById(R.id.new_note);
-        mImageButton.setOnClickListener(newNoteListener);
 
-        getListView().setBackgroundResource(R.drawable.content_bg);
-        getListView().setCacheColorHint(Color.TRANSPARENT);
     }
 
-    private View.OnClickListener newNoteListener = new OnClickListener() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent(Intent.ACTION_INSERT, getIntent().getData()));
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch(id) {
+            case R.id.new_note:
+                startActivity(new Intent(Intent.ACTION_INSERT, getIntent().getData()));
+                break;
         }
-    };
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

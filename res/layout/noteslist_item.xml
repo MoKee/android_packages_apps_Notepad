@@ -19,8 +19,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:textAppearance="?android:attr/textAppearanceLarge"
-    android:background="@drawable/listview_option">
+    android:textAppearance="?android:attr/textAppearanceLarge">
     
     <TextView
         android:id="@+id/title"
@@ -28,7 +27,7 @@
         android:layout_height="40sp"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:paddingLeft="5dip"
+        android:paddingLeft="10dip"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:ellipsize="end" />
@@ -38,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="40sp"
         android:gravity="center_vertical"
-        android:paddingRight="5dip"    
+        android:paddingRight="10dip"    
         android:textSize="15sp"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceLarge" />
