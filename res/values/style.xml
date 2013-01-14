@@ -1,8 +1,0 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <style name="editor_title" mce_bogus="1" parent="android:Theme">
-        <item name="android:windowTitleSize">50dp</item>
-        <item name="android:windowTitleBackgroundStyle">@drawable/notelites_title</item>
-    </style>
-
-</resources>

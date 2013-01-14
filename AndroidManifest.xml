@@ -64,8 +64,7 @@
         </activity>
         <activity
             android:name="NoteEditor"
-            android:configChanges="keyboardHidden|orientation"
-            android:theme="@style/editor_title" >
+            android:configChanges="keyboardHidden|orientation">
 
             <!--
                  This filter says that we can view or edit the data of
@@ -93,43 +92,7 @@
                 <data android:mimeType="vnd.android.cursor.dir/vnd.google.note" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="TitleEditor"
-            android:icon="@drawable/ic_menu_edit"
-            android:label="@string/title_edit_title"
-            android:windowSoftInputMode="stateVisible"
-            android:theme="@android:style/Theme.Holo.Light.Dialog" >
-
-            <!--
-                 This activity implements an alternative action that can be
-                 performed on notes: editing their title.  It can be used as
-                 a default operation if the user invokes this action, and is
-                 available as an alternative action for any note data.
-            -->
-            <intent-filter android:label="@string/resolve_title" >
-
-                <!--
-                     This is the action we perform.  It is a custom action we
-                     define for our application, not a generic VIEW or EDIT
-                     action since we are not a general note viewer/editor.
-                -->
-                <action android:name="com.android.notepad.action.EDIT_TITLE" />
-                <!-- DEFAULT: execute if being directly invoked. -->
-                <category android:name="android.intent.category.DEFAULT" />
-                <!--
-                     ALTERNATIVE: show as an alternative action when the user is
-                     working with this type of data.
-                -->
-                <category android:name="android.intent.category.ALTERNATIVE" />
-                <!--
-                     SELECTED_ALTERNATIVE: show as an alternative action the user
-                     can perform when selecting this type of data.
-                -->
-                <category android:name="android.intent.category.SELECTED_ALTERNATIVE" />
-                <!-- This is the data type we operate on. -->
-                <data android:mimeType="vnd.android.cursor.item/vnd.google.note" />
-            </intent-filter>
-        </activity>
+        
         <activity
             android:name="com.mokee.notepad.NotesLiveFolder"
             android:icon="@drawable/live_folder_notes"

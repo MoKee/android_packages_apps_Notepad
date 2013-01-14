@@ -57,9 +57,9 @@ public class NotesList extends ListActivity {
      * The columns we are interested in from the database
      */
     private static final String[] PROJECTION = new String[] {
-            NoteColumns._ID, // 0
-            NoteColumns.TITLE, // 1
-            NoteColumns.MODIFIED_DATE, // 3
+            NoteColumns._ID,
+            NoteColumns.TITLE,
+            NoteColumns.MODIFIED_DATE,
     };
 
     /** The index of the title column */
@@ -106,7 +106,7 @@ public class NotesList extends ListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
+        getMenuInflater().inflate(R.menu.new_note, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

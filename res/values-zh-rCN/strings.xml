@@ -40,5 +40,6 @@
     <string name="dialog_ok">确定</string>
     <string name="dialog_no">取消</string>
     <string name="is_to_save">是否保存？</string>
+    <string name="is_to_delete">是否删除？</string>
 
 </resources>

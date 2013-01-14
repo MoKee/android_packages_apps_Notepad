@@ -40,5 +40,6 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_no">NO</string>
     <string name="is_to_save">To save or not ?</string>
+    <string name="is_to_delete">To delete or not ?</string>
 
 </resources>

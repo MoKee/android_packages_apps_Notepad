@@ -30,16 +30,15 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputType;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.ImageButton;
 
 import com.mokee.notepad.NotePad.NoteColumns;
 
@@ -59,13 +58,12 @@ public class NoteEditor extends Activity {
     private static final String[] PROJECTION = new String[] {
             NoteColumns._ID, // 0
             NoteColumns.NOTE, // 1
-            NoteColumns.TITLE, // 2
     };
     /** The index of the note column */
     private static final int COLUMN_INDEX_NOTE = 1;
     /** The index of the title column */
-    private static final int COLUMN_INDEX_TITLE = 2;
     private static final int IS_TO_SAVE = 0;
+    private static final int IS_TO_DELETE = 1;
 
     // This is our state data that is stored when freezing.
     private static final String ORIGINAL_CONTENT = "origContent";
@@ -83,8 +81,6 @@ public class NoteEditor extends Activity {
     private EditText mText;
     private String mOriginalContent;
     private String mOriginalTitle;
-    private EditText mTitleEditText;
-    private ImageButton mSaveImageButton;
 
     /**
      * A custom EditText that draws lines between each line of text that is
@@ -120,7 +116,6 @@ public class NoteEditor extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 
         final Intent intent = getIntent();
 
@@ -161,13 +156,13 @@ public class NoteEditor extends Activity {
         setContentView(R.layout.note_editor);
 
         // The text view for our note, identified by its ID in the XML file.
-        mText = (EditText) findViewById(R.id.note);
+        mText = (EditText) findViewById(R.id.text);
         mText.setAutoLinkMask(Linkify.ALL);
         mText.setTextAppearance(getBaseContext(), com.android.internal.R.attr.textAppearanceLarge);
         mText.setTextSize(25);
         mText.setPadding(10, 0, 10, 5);
-        mText.setLineSpacing(1.1f, 1.1f);
-        // mText.addTextChangedListener(watcher);
+        mText.setLineSpacing(1.1f, 1.1f);   
+        mText.addTextChangedListener(watcher);
 
         // Get the note!
         @SuppressWarnings("deprecation")
@@ -180,28 +175,75 @@ public class NoteEditor extends Activity {
             mOriginalContent = savedInstanceState.getString(ORIGINAL_CONTENT);
             mOriginalTitle = savedInstanceState.getString(ORIGINAL_TITLE);
         }
-        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_note_editor);
-        mTitleEditText = (EditText) findViewById(R.id.edit_title);
-        mTitleEditText.setOnClickListener(mTitleEditTextClickListener);
-        if (Intent.ACTION_EDIT.equals(action)) {
-            mTitleEditText.setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL);
-            mTitleEditText.setCursorVisible(false);
-        }
-
-        mSaveImageButton = (ImageButton) findViewById(R.id.save_note);
-        mSaveImageButton.setOnClickListener(saveNoteClickListener);
 
     }
-
-    private OnClickListener saveNoteClickListener = new OnClickListener() {
+    
+    private String getTitleStr(String mText)
+    {
+        String TextArray [] = mText.split("\n");
+        return TextArray[0];
+    }
+    
+    private TextWatcher watcher = new TextWatcher(){
 
         @Override
-        public void onClick(View v) {
-            saveNote();
-            finish();
-        }
-    };
+        public void afterTextChanged(Editable s) {
 
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String tmpTitle = getTitleStr(mText.getText().toString().trim());
+            if(mState != STATE_EDIT)
+            {
+                setTitle(TextUtils.isEmpty(tmpTitle) ? getString(R.string.title_create) : tmpTitle); 
+            }
+            else 
+            {
+                setTitle(tmpTitle);
+            }
+        }};
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.save_note, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch(id) {
+            case R.id.save_note:
+                saveNote();
+                finish();
+                break;
+            case android.R.id.home:
+                if (mState == STATE_INSERT && mText.getText().length() == 0) {
+                    finish();
+                }
+                else if (mState == STATE_EDIT
+                        && mText.getText().toString().equals(mCursor.getString(COLUMN_INDEX_NOTE))) {
+                    finish();
+                }
+                else if (mState == STATE_EDIT
+                        && TextUtils.isEmpty(mText.getText().toString()))
+                {
+                    showDialog(IS_TO_DELETE);
+                }
+                else {
+                    showDialog(IS_TO_SAVE);
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    
     @SuppressWarnings("deprecation")
     @Override
     protected void onResume() {
@@ -218,16 +260,11 @@ public class NoteEditor extends Activity {
             // Modify our overall title depending on the mode we are running in.
             if (mState == STATE_EDIT) {
                 // Set the title of the Activity to include the note title
-                String title = mCursor.getString(COLUMN_INDEX_TITLE);
-                // Resources res = getResources();
-                // String text =
-                // String.format(res.getString(R.string.title_edit), title);
-                // setTitle(text);
-                mTitleEditText.setText(title);
+                String title = mCursor.getString(COLUMN_INDEX_NOTE);
+                setTitle(title);
             } else if (mState == STATE_INSERT) {
-                // setTitle(getText(R.string.title_create));
+                setTitle(getText(R.string.title_create));
             }
-
             // This is a little tricky: we may be resumed after previously being
             // paused/stopped. We want to put the new text in the text view,
             // but leave the user where they were (retain the cursor position
@@ -235,15 +272,10 @@ public class NoteEditor extends Activity {
             String note = mCursor.getString(COLUMN_INDEX_NOTE);
             mText.setTextKeepState(note);
 
-            String title = mCursor.getString(COLUMN_INDEX_TITLE);
             // If we hadn't previously retrieved the original text, do so
             // now. This allows the user to revert their changes.
             if (mOriginalContent == null) {
                 mOriginalContent = note;
-            }
-
-            if (mOriginalTitle == null) {
-                mOriginalTitle = title;
             }
 
         } else {
@@ -267,14 +299,12 @@ public class NoteEditor extends Activity {
 
         String text = mText.getText().toString();
         int length = text.length();
-        String title = mTitleEditText.getText().toString();
-        int length2 = title.length();
 
         // If this activity is finished, and there is no text, then we
         // simply delete the note entry.
         // Note that we do this both for editing and inserting... it
         // would be reasonable to only do it when inserting.
-        if (isFinishing() && (length == 0) && (length2 == 0) && mCursor != null) {
+        if (isFinishing() && (length == 0) && mCursor != null) {
             setResult(RESULT_CANCELED);
             deleteNote();
         }
@@ -291,10 +321,11 @@ public class NoteEditor extends Activity {
         // changes are safely saved away in the provider. We don't need
         // to do this if only editing.
         if (mState == STATE_EDIT
-                && mText.getText().toString().equals(mCursor.getString(COLUMN_INDEX_NOTE))
-                && mTitleEditText.getText().toString()
-                        .equals(mCursor.getString(COLUMN_INDEX_TITLE))) {
-
+                && mText.getText().toString().equals(mCursor.getString(COLUMN_INDEX_NOTE))) {
+            if (TextUtils.isEmpty(mText.getText().toString()))
+            {
+                deleteNote();
+            }
         }
         else {
             if (mCursor != null) {
@@ -303,11 +334,11 @@ public class NoteEditor extends Activity {
 
                 // Bump the modification time to now.
                 values.put(NoteColumns.MODIFIED_DATE, System.currentTimeMillis());
-                values.put(NoteColumns.TITLE, mTitleEditText.getText().toString());
+                values.put(NoteColumns.TITLE, getTitleStr(mText.getText().toString()));
 
                 String text = mText.getText().toString();
                 int length = text.length();
-                String titleString = mTitleEditText.getText().toString();
+                String titleString = getTitleStr(mText.getText().toString());
                 if (titleString.length() == 0) {
                     String title = text.substring(0, Math.min(MAXTITLESUM, length));
                     values.put(NoteColumns.TITLE, title);
@@ -341,31 +372,27 @@ public class NoteEditor extends Activity {
             // mText.setText("");
         }
     }
-
-    private OnClickListener mTitleEditTextClickListener = new OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-            InputMethodManager imm = (InputMethodManager) getBaseContext().getSystemService(
-                    Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(getCurrentFocus(), 0);
-            mTitleEditText.setInputType(~InputType.TYPE_TEXT_VARIATION_NORMAL);
-            mTitleEditText.setCursorVisible(true);
-        }
-    };
+    
+    @Override
+    protected void onStart() {
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        super.onStart();
+    }
 
     @SuppressWarnings("deprecation")
     @Override
     public void onBackPressed() {
-        if (mState == STATE_INSERT && mText.getText().length() == 0
-                && mTitleEditText.getText().length() == 0) {
+        if (mState == STATE_INSERT && mText.getText().length() == 0) {
             finish();
         }
         else if (mState == STATE_EDIT
-                && mText.getText().toString().equals(mCursor.getString(COLUMN_INDEX_NOTE))
-                && mTitleEditText.getText().toString()
-                        .equals(mCursor.getString(COLUMN_INDEX_TITLE))) {
+                && mText.getText().toString().equals(mCursor.getString(COLUMN_INDEX_NOTE))) {
             finish();
+        }
+        else if (mState == STATE_EDIT
+                && TextUtils.isEmpty(mText.getText().toString()))
+        {
+            showDialog(IS_TO_DELETE);
         }
         else {
             showDialog(IS_TO_SAVE);
@@ -402,7 +429,32 @@ public class NoteEditor extends Activity {
                                     }
                                 })
                         .create();
+            case IS_TO_DELETE:
+                return new AlertDialog.Builder(NoteEditor.this)
+                .setIcon(R.drawable.alert_dialog_icon)
+                .setTitle(R.string.is_to_delete)
+                .setPositiveButton(R.string.dialog_ok,
+                        new DialogInterface.OnClickListener() {
 
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                .setNegativeButton(R.string.dialog_no,
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                if (mState == STATE_INSERT) {
+                                    getContentResolver().delete(mUri, null, null);
+                                }
+                                cancelModify = true;
+                                finish();
+                            }
+                        })
+                .create();
             default:
                 break;
         }
