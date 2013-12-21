@@ -6,4 +6,4 @@ This source was released under the terms of
 
 Visit [MoKee Code Review](http://review.mfunz.com/) to get the source and patches.
 
-Copyright © 2013 The MoKee Project
+Copyright © 2014 The MoKee OpenSource Project
